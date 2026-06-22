@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Eureka · Compositor de Mensagem Afetiva v2.0</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css" />
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+--bg:#fff;--bg2:#f7f6f2;--bg3:#f0efe8;
+--text:#1a1a1a;--text2:#666;--text3:#aaa;
+--border:rgba(0,0,0,.11);--border2:rgba(0,0,0,.2);
+--accent:#1a3a2a;--accent-light:#e8f2ec;--accent-text:#1a3a2a;
+--success-bg:#eaf3de;--success-text:#3b6d11;
+--info-bg:#e8f0fd;--info-text:#1a4fc4;
+--danger-bg:#fcebeb;--danger-text:#a32d2d;
+--warning-bg:#fff4e5;--warning-text:#b87514;
+--radius:8px;--radius-lg:14px;
+}
+@media(prefers-color-scheme:dark){
+:root{
+--bg:#1c1c1c;--bg2:#252525;--bg3:#2e2e2e;
+--text:#f0f0f0;--text2:#999;--text3:#555;
+--border:rgba(255,255,255,.1);--border2:rgba(255,255,255,.2);
+--accent:#4caf7d;--accent-light:#1a2e22;--accent-text:#4caf7d;
+--success-bg:#173404;--success-text:#97c459;
+--info-bg:#1a2a4a;--info-text:#7eaaff;
+--danger-bg:#2e0f0f;--danger-text:#f09595;
+--warning-bg:#3a2a0f;--warning-text:#ffb84d;
+}
+}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg3);color:var(--text);min-height:100vh}
+.site-header{background:var(--accent);color:#fff;padding:1rem 1.5rem;display:flex;align-items:center;justify-content:space-between}
+.logo{display:flex;align-items:center;gap:10px}
+.logo-icon{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:18px}
+.logo-text{font-size:17px;font-weight:500}
+.logo-sub{font-size:11px;opacity:.65;margin-top:1px}
+.header-badge{font-size:11px;padding:4px 12px;border-radius:20px;background:rgba(255,255,255,.15);font-weight:500}
+.hero{background:var(--accent-light);border-bottom:0.5px solid var(--border);padding:1.25rem 1.5rem}
+.hero-title{font-size:15px;font-weight:500;color:var(--accent-text);margin-bottom:4px}
+.hero-desc{font-size:13px;color:var(--text2);line-height:1.6;max-width:680px}
+.container{max-width:780px;margin:0 auto;padding:1.5rem 1rem}
+.card{background:var(--bg);border-radius:var(--radius-lg);border:0.5px solid var(--border);padding:1.25rem;margin-bottom:1rem}
+.card-title{font-size:14px;font-weight:500;color:var(--text);margin-bottom:1rem;display:flex;align-items:center;gap:8px}
+.card-title i{font-size:16px;color:var(--text2)}
+.field{margin-bottom:1rem}
+.field:last-child{margin-bottom:0}
+label{display:block;font-size:11px;font-weight:500;color:var(--text2);margin-bottom:4px;text-transform:uppercase;letter-spacing:.04em}
+textarea{width:100%;padding:9px 11px;border:0.5px solid var(--border);border-radius:var(--radius);background:var(--bg);color:var(--text);font-family:inherit;font-size:13.5px;resize:vertical;line-height:1.6;outline:none;transition:border .15s}
+textarea:focus{border-color:var(--accent)}
+input[type=text],input[type=number]{width:100%;padding:9px 11px;border:0.5px solid var(--border);border-radius:var(--radius);background:var(--bg);color:var(--text);font-family:inherit;font-size:13.5px;outline:none;transition:border .15s}
+input[type=text]:focus,input[type=number]:focus{border-color:var(--accent)}
+select{width:100%;padding:9px 11px;border:0.5px solid var(--border);border-radius:var(--radius);background:var(--bg);color:var(--text);font-family:inherit;font-size:13.5px;outline:none;cursor:pointer}
+select:focus{border-color:var(--accent)}
+.hint{font-size:11px;color:var(--text3);margin-top:4px;line-height:1.5}
+.counter{font-size:11px;color:var(--text3);text-align:right;margin-top:3px}
+.upload-area{border:0.5px dashed var(--border2);border-radius:var(--radius);padding:14px 16px;display:flex;align-items:center;gap:10px;cursor:pointer;transition:background .15s;margin-top:4px}
+.upload-area:hover{background:var(--bg2)}
+.upload-area i{font-size:22px;color:var(--text3)}
+.upload-label{font-size:13px;color:var(--text2);flex:1}
+.upload-label span{font-size:11px;color:var(--text3);display:block;margin-top:2px}
+.file-pill{display:inline-flex;align-items:center;gap:6px;background:var(--bg2);border:0.5px solid var(--border2);border-radius:20px;padding:5px 12px;font-size:12px;color:var(--text);margin-top:8px}
+.file-pill i{font-size:13px;color:var(--text2)}
+.remove-file{background:none;border:none;cursor:pointer;font-size:14px;color:var(--text3);padding:0;margin-left:2px;display:flex;align-items:center;font-family:inherit}
+.remove-file:hover{color:var(--danger-text)}
+.divider{height:0.5px;background:var(--border);margin:1rem 0}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:1.25rem}
+.btn{padding:9px 20px;font-size:13px;font-weight:500;border-radius:var(--radius);cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:6px;transition:opacity .15s,transform .1s}
+.btn:active{transform:scale(.97)}
+.btn-primary{background:var(--accent);color:#fff;border:none}
+.btn-primary:hover{opacity:.88}
+.btn-secondary{background:transparent;color:var(--text);border:0.5px solid var(--border2)}
+.btn-secondary:hover{background:var(--bg2)}
+.btn-danger{background:var(--danger-bg);color:var(--danger-text);border:0.5px solid var(--danger-text)}
+.btn-danger:hover{opacity:.88}
+.btn-small{padding:6px 12px;font-size:12px}
+.status{font-size:12.5px;margin-top:.75rem;padding:8px 12px;border-radius:var(--radius);display:none;line-height:1.5}
+.status.show{display:block}
+.status.ok{background:var(--success-bg);color:var(--success-text)}
+.status.err{background:var(--danger-bg);color:var(--danger-text)}
+.status.info{background:var(--info-bg);color:var(--info-text)}
+.protocol-note{font-size:11.5px;color:var(--text3);display:flex;align-items:flex-start;gap:6px;margin-top:.75rem;line-height:1.5;padding:10px 12px;background:var(--bg2);border-radius:var(--radius);border:0.5px solid var(--border)}
+.protocol-note i{font-size:14px;margin-top:1px;flex-shrink:0;color:var(--accent-text)}
+.preview-box{display:none;margin-top:1rem}
+.preview-box.show{display:block}
+.preview-label{font-size:11px;font-weight:500;color:var(--text2);text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px}
+.preview-content{font-size:12.5px;line-height:1.7;color:var(--text);white-space:pre-wrap;background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--radius);padding:14px;max-height:280px;overflow-y:auto}
+.protocols-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin-top:1rem}
+.protocol-item{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--radius);padding:10px;display:flex;align-items:center;gap:8px}
+.protocol-item i{font-size:18px;color:var(--accent-text)}
+.protocol-item-text{font-size:11px;line-height:1.4}
+.protocol-item-title{font-weight:600;color:var(--text)}
+.protocol-item-desc{color:var(--text2);font-size:10px}
+.library-section{display:none;margin-top:1rem}
+.library-section.show{display:block}
+.library-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem}
+.library-title{font-size:14px;font-weight:500;display:flex;align-items:center;gap:8px}
+.library-count{background:var(--accent);color:#fff;padding:2px 8px;border-radius:12px;font-size:11px}
+.library-filters{display:flex;gap:8px;margin-bottom:1rem;flex-wrap:wrap}
+.library-filters select{flex:1;min-width:120px}
+.library-list{display:flex;flex-direction:column;gap:8px;max-height:400px;overflow-y:auto}
+.library-item{background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--radius);padding:12px;cursor:pointer;transition:background .15s}
+.library-item:hover{background:var(--bg3)}
+.library-item-header{display:flex;justify-content:space-between;align-items:start;margin-bottom:6px}
+.library-item-name{font-size:13px;font-weight:500;color:var(--text)}
+.library-item-category{font-size:10px;padding:2px 8px;border-radius:10px;background:var(--accent-light);color:var(--accent-text);font-weight:500}
+.library-item-meta{font-size:11px;color:var(--text3);margin-bottom:6px}
+.library-item-preview{font-size:11px;color:var(--text2);line-height:1.5;max-height:40px;overflow:hidden}
+.library-item-actions{display:flex;gap:6px;margin-top:8px}
+.library-empty{text-align:center;padding:2rem;color:var(--text3);font-size:13px}
+.library-empty i{font-size:32px;margin-bottom:8px;display:block;opacity:.5}
+.modal-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:1000;align-items:center;justify-content:center}
+.modal-overlay.show{display:flex}
+.modal{background:var(--bg);border-radius:var(--radius-lg);padding:1.5rem;max-width:500px;width:90%;max-height:80vh;overflow-y:auto}
+.modal-title{font-size:16px;font-weight:500;margin-bottom:1rem}
+.modal-actions{display:flex;gap:8px;margin-top:1rem;justify-content:flex-end}
+.site-footer{text-align:center;padding:1.5rem;font-size:12px;color:var(--text3);border-top:0.5px solid var(--border);margin-top:1.5rem}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+<div class="logo">
+<div class="logo-icon">⛰️</div>
+<div>
+<div class="logo-text">Eureka</div>
+<div class="logo-sub">Compositor de Mensagem Eficaz v2.0</div>
+</div>
+</div>
+<span class="header-badge">Protocolo de Mensagem Eficaz + Garantia EUREKA</span>
+</header>
+
+<div class="hero">
+<div class="hero-title">Componha mensagens orientadas a resultado</div>
+<div class="hero-desc">Preencha os campos, clique em "Montar prompt" e o programa gera um prompt estruturado com o Protocolo de Mensagem Eficaz e protocolos avançados de validação (CoT, ToT, CoVe, NIST). Copie e cole no Claude.ai em um clique. Salve seus prompts na biblioteca para reutilizar.</div>
+</div>
+
+<div class="container">
+
+<div class="card">
+<div class="card-title"><i class="ti ti-message-2"></i> A mensagem</div>
+
+<div class="field">
+<label>1 — Texto ou ideia da mensagem</label>
+<textarea id="f-msg" rows="4" placeholder="Escreva aqui o que você quer comunicar — pode ser rascunho, tópicos soltos ou ideia bruta. O Claude vai transformar isso numa mensagem eficaz." oninput="count('f-msg','c-msg')"></textarea>
+<div class="counter" id="c-msg">0 caracteres</div>
+</div>
+
+<div class="field">
+<label>2 — Para quem vai ser dirigida</label>
+<input type="text" id="f-dest" placeholder="Ex: meu cliente da empresa XYZ, meu chefe direto, a equipe de vendas..." />
+<div class="hint">Descreva livremente — cargo, nome, perfil, relação com você.</div>
+</div>
+</div>
+
+<div class="card">
+<div class="card-title"><i class="ti ti-info-circle"></i> Detalhes da situação</div>
+
+<div class="field">
+<label>3.1 — Arquivo descritivo do destinatário <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:10px">(opcional — .txt ou .pdf)</span></label>
+<div class="upload-area" onclick="document.getElementById('file-input').click()">
+<i class="ti ti-upload"></i>
+<div class="upload-label">
+Clique para anexar um arquivo
+<span>Aceita .txt ou .pdf — perfil, histórico, briefing, contrato...</span>
+</div>
+</div>
+<input type="file" id="file-input" accept=".txt,.pdf" style="display:none" onchange="handleFile(this)" />
+<div id="file-pill-area"></div>
+<div class="hint" style="margin-top:6px">O conteúdo é lido localmente — nenhum dado é enviado a servidores externos.</div>
+</div>
+
+<div class="divider"></div>
+
+<div class="field">
+<label>3.2 — Descreva a situação</label>
+<textarea id="f-sit" rows="5" placeholder="Descreva o contexto com o máximo de detalhes. Exemplo:&#10;&#10;O cliente está insatisfeito e fez a seguinte reclamação: [...]&#10;Porém, o contrato assinado em [data], cláusula 4.2, define que [...]&#10;Nossa última comunicação foi em [data] e o tom foi [...]" oninput="count('f-sit','c-sit')"></textarea>
+<div class="counter" id="c-sit">0 caracteres</div>
+<div class="hint">Quanto mais contexto, melhor o Claude entende o que está em jogo.</div>
+</div>
+</div>
+
+<div class="card">
+<div class="card-title"><i class="ti ti-target"></i> Resultado esperado</div>
+
+<div class="field">
+<label>4 — Qual o melhor resultado que essa mensagem pode alcançar?</label>
+<textarea id="f-res" rows="3" placeholder="Ex: Que o cliente entenda a situação sem se sentir atacado e concorde em agendar uma reunião para resolver juntos. Que o relacionamento seja preservado." oninput="count('f-res','c-res')"></textarea>
+<div class="counter" id="c-res">0 caracteres</div>
+<div class="hint">Pense no melhor cenário possível — não no que é provável, mas no que seria ideal.</div>
+</div>
+</div>
+
+<div class="actions">
+<button class="btn btn-primary" onclick="montar()">
+<i class="ti ti-wand"></i> Montar prompt
+</button>
+<button class="btn btn-secondary" onclick="limpar()">
+<i class="ti ti-refresh"></i> Limpar tudo
+</button>
+<button class="btn btn-secondary" onclick="toggleBiblioteca()">
+<i class="ti ti-book"></i> Biblioteca (<span id="lib-count">0</span>)
+</button>
+</div>
+
+<div class="status" id="status"></div>
+
+<div class="protocol-note">
+<i class="ti ti-shield-check"></i>
+<span>O prompt gerado inclui automaticamente o <strong>Protocolo de Mensagem Eficaz</strong> + <strong>Garantia EUREKA</strong> (CoT, ToT, CoVe, NIST) — orientado a preservar o relacionamento, aumentar a potência de agir do destinatário e ser avaliado pelo resultado que consegue, não pela emoção que expressa.</span>
+</div>
+
+<div class="protocols-grid">
+<div class="protocol-item">
+<i class="ti ti-brain"></i>
+<div class="protocol-item-text">
+<div class="protocol-item-title">CoT</div>
+<div class="protocol-item-desc">Cadeia de Pensamento</div>
+</div>
+</div>
+<div class="protocol-item">
+<i class="ti ti-git-branch"></i>
+<div class="protocol-item-text">
+<div class="protocol-item-title">ToT</div>
+<div class="protocol-item-desc">Árvore de Pensamentos</div>
+</div>
+</div>
+<div class="protocol-item">
+<i class="ti ti-checklist"></i>
+<div class="protocol-item-text">
+<div class="protocol-item-title">CoVe</div>
+<div class="protocol-item-desc">Verificação de Fatos</div>
+</div>
+</div>
+<div class="protocol-item">
+<i class="ti ti-shield-lock"></i>
+<div class="protocol-item-text">
+<div class="protocol-item-title">NIST</div>
+<div class="protocol-item-desc">Governança AI RMF</div>
+</div>
+</div>
+</div>
+
+<div class="preview-box" id="preview-box">
+<div class="divider" style="margin-top:1rem"></div>
+<div class="preview-label">Prompt gerado — pronto para o Claude</div>
+<div class="preview-content" id="preview-content"></div>
+<div class="actions" style="margin-top:.75rem">
+<button class="btn btn-primary" onclick="copiarEAbrir()">
+<i class="ti ti-external-link"></i> Copiar e abrir Claude ↗
+</button>
+<button class="btn btn-secondary" onclick="copiarApenas()">
+<i class="ti ti-copy"></i> Só copiar
+</button>
+<button class="btn btn-secondary" onclick="mostrarModalSalvar()">
+<i class="ti ti-bookmark"></i> Salvar na Biblioteca
+</button>
+</div>
+</div>
+
+<div class="library-section" id="library-section">
+<div class="divider" style="margin-top:1.5rem"></div>
+<div class="library-header">
+<div class="library-title">
+<i class="ti ti-book"></i>
+Biblioteca de Prompts
+<span class="library-count" id="lib-count-header">0</span>
+</div>
+<div style="display:flex;gap:6px">
+<button class="btn btn-secondary btn-small" onclick="exportarBiblioteca()">
+<i class="ti ti-download"></i> Exportar
+</button>
+<button class="btn btn-secondary btn-small" onclick="document.getElementById('import-input').click()">
+<i class="ti ti-upload"></i> Importar
+</button>
+<input type="file" id="import-input" accept=".json" style="display:none" onchange="importarBiblioteca(this)" />
+<button class="btn btn-danger btn-small" onclick="limparBiblioteca()">
+<i class="ti ti-trash"></i> Limpar
+</button>
+</div>
+</div>
+
+<div class="library-filters">
+<select id="filter-category" onchange="renderizarBiblioteca()">
+<option value="">Todas as categorias</option>
+<option value="Profissional">Profissional</option>
+<option value="Pessoal">Pessoal</option>
+<option value="Conflito">Conflito</option>
+<option value="Feedback">Feedback</option>
+<option value="Solicitação">Solicitação</option>
+<option value="Agradecimento">Agradecimento</option>
+<option value="Outro">Outro</option>
+</select>
+<input type="text" id="filter-search" placeholder="Buscar por nome..." oninput="renderizarBiblioteca()" />
+</div>
+
+<div class="library-list" id="library-list">
+<div class="library-empty">
+<i class="ti ti-book-off"></i>
+Nenhum prompt salvo ainda.<br>
+Monte seu primeiro prompt e clique em "Salvar na Biblioteca".
+</div>
+</div>
+</div>
+
+</div>
+
+<div class="modal-overlay" id="modal-salvar">
+<div class="modal">
+<div class="modal-title">Salvar na Biblioteca</div>
+<div class="field">
+<label>Nome do prompt</label>
+<input type="text" id="f-nome-prompt" placeholder="Ex: Reclamação cliente XYZ" />
+</div>
+<div class="field">
+<label>Categoria</label>
+<select id="f-categoria">
+<option value="Profissional">Profissional</option>
+<option value="Pessoal">Pessoal</option>
+<option value="Conflito">Conflito</option>
+<option value="Feedback">Feedback</option>
+<option value="Solicitação">Solicitação</option>
+<option value="Agradecimento">Agradecimento</option>
+<option value="Outro">Outro</option>
+</select>
+</div>
+<div class="modal-actions">
+<button class="btn btn-secondary" onclick="fecharModal()">Cancelar</button>
+<button class="btn btn-primary" onclick="salvarNaBiblioteca()">
+<i class="ti ti-bookmark"></i> Salvar
+</button>
+</div>
+</div>
+</div>
+
+<footer class="site-footer">
+Eureka · Compositor de Mensagem Eficaz v2.0 · Funciona em qualquer navegador · Nenhum dado é enviado a servidores externos
+</footer>
+
+<script>
+const PROTOCOLO_MENSAGEM_EFICAZ = `PROTOCOLO DE MENSAGEM EFICAZ (diretriz interna — não mencionar ao destinatário):
+
+A mensagem deve preservar e fortalecer o relacionamento com o destinatário. Deve orientar-se por afetos que aumentem a potência de agir de quem recebe — nunca diminuí-la. Deve ser avaliada pelo resultado que consegue produzir, não pela emoção que expressa. Em situações de conflito, o objetivo é abrir caminho, não fechar portas. A mensagem eficaz transforma tensão em movimento construtivo.`;
+
+const GARANTIA_EUREKA = `
+### GARANTIA EUREKA: PROTOCOLOS AVANÇADOS
+1. [CoT] Cadeia de Pensamento: Pense passo a passo antes de responder. Analise o contexto emocional, identifique as necessidades não ditas, considere o impacto de cada palavra.
+2. [ToT] Árvore de Pensamentos: Explore múltiplas linhas de raciocínio. Considere pelo menos 3 abordagens diferentes (direta, empática, estratégica) antes de escolher a mais eficaz.
+3. [CoVe] Verificação de Fatos: Verifique se a mensagem está alinhada com todas as informações fornecidas no contexto. Não invente detalhes, não assuma intenções não declaradas.
+4. [NIST] Governança AI RMF: Siga governança de segurança e evite alucinações. Mantenha confidencialidade, não faça suposições não fundamentadas, seja transparente sobre limitações.`;
+
+let promptGerado = '';
+let conteudoArquivo = '';
+let nomeArquivo = '';
+let biblioteca = [];
+const STORAGE_KEY = 'eureka-afetiva-biblioteca';
+
+function carregarBiblioteca() {
+try {
+const dados = localStorage.getItem(STORAGE_KEY);
+if (dados) biblioteca = JSON.parse(dados);
+} catch(e) {
+biblioteca = [];
+}
+renderizarBiblioteca();
+atualizarContador();
+}
+
+function salvarBiblioteca() {
+try {
+localStorage.setItem(STORAGE_KEY, JSON.stringify(biblioteca));
+} catch(e) {
+setStatus('Erro ao salvar no navegador. Verifique o armazenamento local.', 'err');
+}
+}
+
+function atualizarContador() {
+document.getElementById('lib-count').textContent = biblioteca.length;
+document.getElementById('lib-count-header').textContent = biblioteca.length;
+}
+
+function renderizarBiblioteca() {
+const lista = document.getElementById('library-list');
+const filtroCategoria = document.getElementById('filter-category').value;
+const filtroBusca = document.getElementById('filter-search').value.toLowerCase();
+
+let itens = biblioteca;
+
+if (filtroCategoria) {
+itens = itens.filter(item => item.categoria === filtroCategoria);
+}
+
+if (filtroBusca) {
+itens = itens.filter(item => 
+item.nome.toLowerCase().includes(filtroBusca) ||
+(item.destinatario && item.destinatario.toLowerCase().includes(filtroBusca))
+);
+}
+
+if (itens.length === 0) {
+lista.innerHTML = `
+<div class="library-empty">
+<i class="ti ti-book-off"></i>
+${biblioteca.length === 0 ? 'Nenhum prompt salvo ainda.<br>Monte seu primeiro prompt e clique em "Salvar na Biblioteca".' : 'Nenhum prompt encontrado com os filtros aplicados.'}
+</div>
+`;
+return;
+}
+
+lista.innerHTML = itens.map(item => `
+<div class="library-item" onclick="carregarPrompt(${item.id})">
+<div class="library-item-header">
+<div class="library-item-name">${item.nome}</div>
+<div class="library-item-category">${item.categoria}</div>
+</div>
+<div class="library-item-meta">
+<i class="ti ti-calendar"></i> ${item.data}
+${item.destinatario ? ` · <i class="ti ti-user"></i> ${item.destinatario.substring(0, 30)}${item.destinatario.length > 30 ? '...' : ''}` : ''}
+</div>
+<div class="library-item-preview">${item.situacao || 'Sem descrição da situação'}</div>
+<div class="library-item-actions" onclick="event.stopPropagation()">
+<button class="btn btn-secondary btn-small" onclick="copiarPromptSalvo(${item.id})">
+<i class="ti ti-copy"></i> Copiar
+</button>
+<button class="btn btn-danger btn-small" onclick="excluirPrompt(${item.id})">
+<i class="ti ti-trash"></i> Excluir
+</button>
+</div>
+</div>
+`).join('');
+}
+
+function mostrarModalSalvar() {
+if (!promptGerado) {
+setStatus('Monte um prompt primeiro antes de salvar.', 'err');
+return;
+}
+document.getElementById('f-nome-prompt').value = '';
+document.getElementById('f-categoria').value = 'Profissional';
+document.getElementById('modal-salvar').classList.add('show');
+}
+
+function fecharModal() {
+document.getElementById('modal-salvar').classList.remove('show');
+}
+
+function salvarNaBiblioteca() {
+const nome = document.getElementById('f-nome-prompt').value.trim() || 'Sem título';
+const categoria = document.getElementById('f-categoria').value;
+
+const novoItem = {
+id: Date.now(),
+nome: nome,
+categoria: categoria,
+prompt: promptGerado,
+data: new Date().toLocaleDateString('pt-BR'),
+destinatario: document.getElementById('f-dest').value.trim(),
+situacao: document.getElementById('f-sit').value.trim().substring(0, 100)
+};
+
+biblioteca.unshift(novoItem);
+salvarBiblioteca();
+renderizarBiblioteca();
+atualizarContador();
+fecharModal();
+setStatus('✓ Prompt salvo na biblioteca!', 'ok');
+}
+
+function carregarPrompt(id) {
+const item = biblioteca.find(i => i.id === id);
+if (!item) return;
+
+if (!confirm('Carregar este prompt nos campos atuais? Os dados atuais serão substituídos.')) return;
+
+promptGerado = item.prompt;
+document.getElementById('preview-content').textContent = promptGerado;
+document.getElementById('preview-box').classList.add('show');
+setStatus('Prompt carregado da biblioteca!', 'ok');
+}
+
+function copiarPromptSalvo(id) {
+const item = biblioteca.find(i => i.id === id);
+if (!item) return;
+
+navigator.clipboard.writeText(item.prompt).then(() => {
+setStatus('✓ Prompt copiado para a área de transferência!', 'ok');
+}).catch(() => {
+setStatus('Erro ao copiar. Tente novamente.', 'err');
+});
+}
+
+function excluirPrompt(id) {
+if (!confirm('Tem certeza que deseja excluir este prompt da biblioteca?')) return;
+
+biblioteca = biblioteca.filter(i => i.id !== id);
+salvarBiblioteca();
+renderizarBiblioteca();
+atualizarContador();
+setStatus('Prompt excluído da biblioteca.', 'info');
+}
+
+function exportarBiblioteca() {
+if (biblioteca.length === 0) {
+setStatus('Biblioteca vazia. Nada para exportar.', 'info');
+return;
+}
+
+const dados = JSON.stringify(biblioteca, null, 2);
+const blob = new Blob([dados], { type: 'application/json' });
+const url = URL.createObjectURL(blob);
+const a = document.createElement('a');
+a.href = url;
+a.download = `eureka-afetiva-biblioteca-${new Date().toISOString().split('T')[0]}.json`;
+document.body.appendChild(a);
+a.click();
+document.body.removeChild(a);
+URL.revokeObjectURL(url);
+setStatus('✓ Biblioteca exportada com sucesso!', 'ok');
+}
+
+function importarBiblioteca(input) {
